@@ -20,7 +20,7 @@
   ],
   "require": {
     "php": ">=7.4.0",
-    "indydevguy/supervisor": "dev-master",
+    "indydevguy/supervisor": "^1.0",
     "symfony/framework-bundle": "^4.0"
   },
   "autoload": {
