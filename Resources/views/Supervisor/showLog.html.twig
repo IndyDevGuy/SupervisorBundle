@@ -1,7 +1,14 @@
 {% trans_default_domain 'IDGSupervisorBundle' %}
-
-{% if log %}
-    {{ log|nl2br }}
-{% else %}
-    {{ "log.empty"|trans }}
-{% endif %}
+<p>
+    {% if log %}
+        {% if stdout is empty %}
+            {% set logg = log|nl2br %}
+            {% set logger = logg|replace({"<br />":'</p><p>',"Starting web socket":'<span style="color:green;">Starting web socket</span>',"Stopping server":'<span style="color:red;">Stopping server</span>',"PHP Warning: Module 'imagick' already loaded in Unknown on line 0":"","NOTICE":'<span style="color:red;">NOTICE</span>',"DEBUG":'<span style="color:yellow;">DEBUG</span>',"Launching Ratchet":'<span style="color:blue;">Launching Ratchet</span>',"zmq":'<span style="color:yellow;">ZMQ</span>',"ZMQ":'<span style="color:yellow;">ZMQ</span>',"INFO":'<span style="color:green">INFO</span>',"[websocket]":'<span style="color:red;">[websocket]</span>','"':""}) %}
+            {{logger|raw}}
+        {% else %}
+            {{log|raw}}
+        {% endif %}
+    {% else %}
+        {{ "log.empty"|trans }}
+    {% endif %}
+</p>

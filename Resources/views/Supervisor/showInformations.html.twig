@@ -3,7 +3,7 @@
 {% if informations %}
     <div>
         {% for key, information in informations %}
-            <div> {{ key }} : {{ information }} </div>
+            <div> <strong>{{ key }}</strong> : {{ information }} </div>
         {% endfor %}
     </div>
 {% else %}

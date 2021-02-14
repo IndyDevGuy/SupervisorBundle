@@ -3,26 +3,81 @@
 <script type="text/javascript">
     document.addEventListener("DOMContentLoaded", function(event) {
         // update processes states on tab change
+        let loadingBoxHtml = '<div id="loadingBox" class="col text-center primary-text"><i class="fa fa-spinner fa-pulse fa-5x" style="margin:10px;"></i></div>';
         $('#supervisor-instances').find('> li > a').click(function (e) {
             e.preventDefault();
             $(this).tab('show');
             updateAll();
         });
-
-        // use ajax to start/stop process. wait 1,2 sec then refresh row
-        $('.process-control > a').click(function (e){
+        let supervisorModal = $('#supervisorModal');
+        $('.processInfoBtn').click(function(e){
             e.preventDefault();
-            var $this = $(this);
-            var process = $(this).parents('.process');
+            supervisorModal.find('.modal-title').text('Process Information');
+            supervisorModal.find('.modal-body').html(loadingBoxHtml);
+            supervisorModal.modal('show');
+            let href = $(this).attr('href');
+            $.get(href, function (r){
+                supervisorModal.find('.modal-body').html(r);
+            });
+        });
+        $('#clear_supervisor_log').click(function(e){
+            e.preventDefault();
+            let href = $(this).attr('href');
+            supervisorModal.find('.modal-title').text('Clearing Supervisor Log');
+            supervisorModal.find('.modal-body').html(loadingBoxHtml);
+            supervisorModal.modal('show');
+            $.get(href, function(data){
+                if(data.success)
+                {
+                    supervisorModal.find('.modal-body').html('<p>Supervisor Log cleared successfully!</p>');
+                }
+            });
+        });
+        $('#view_supervisor_log').click(function(e){
+            e.preventDefault();
+            let href = $(this).attr('href');
+            supervisorModal.find('.modal-title').text('Supervisor Log');
+            supervisorModal.find('.modal-body').html(loadingBoxHtml);
+            supervisorModal.modal('show');
+            $.get(href, function (data){
+                supervisorModal.find('.modal-body').html(data);
+            });
+        });
+        $('#ul_view_information > li > a').click(function (e){
+            e.preventDefault();
+            let href = $(this).attr('href');
+            let text = $(this).html();
+            let title = "";
+            if(text == "{{ "open.stdout"|trans }}")
+                title = "Server Log";
+            else if(text == "{{ "open.stderr"|trans }}")
+                title = "Server Error Log";
+            else
+                title = "Clearing Service Logs";
+            supervisorModal.find('.modal-title').text(title);
+            supervisorModal.find('.modal-body').html(loadingBoxHtml);
+            supervisorModal.modal('show');
+            $.get(href, function (r){
+                if(title != 'Clearing Service Logs')
+                    supervisorModal.find('.modal-body').html(r);
+                else if(r.success)
+                    supervisorModal.find('.modal-body').html('Logs for this service have been cleared successfully!');
+            });
+        });
+        // use ajax to start/stop process. wait 1,2 sec then refresh row
+        $('.start-stop').click(function (e){
+            e.preventDefault();
+            let $this = $(this);
+            let process = $(this).parents('.process');
 
             if (process.data('control') === false || $this.hasClass('disabled')) {
                 console.log('Action canceled');
                 return;
             }
-            var started = process.data('started');
+            let started = process.data('started');
 
             process.data('control', false).removeClass('success danger').addClass('warning');
-            $('.process-statename', process).text(started ? '{{ "stopping"|trans }}' : '{{ "starting"|trans }}').removeClass('label-success label-danger').addClass('label-warning');
+            $('.process-statename', process).text(started ? '{{ "stopping"|trans }}' : '{{ "starting"|trans }}').removeClass('badge-success badge-danger').addClass('badge-warning');
             $this.addClass('disabled');
 
             $.get($this.attr('href'), function (r) {
@@ -38,7 +93,7 @@
                     }, 2000);
                 }
                 setTimeout(function() {
-                    update(process);
+                    update(process,true);
                 }, 1200);
             });
         });
@@ -52,13 +107,13 @@
         // start/stop all
         $('.processes-control > a').click(function (e) {
             e.preventDefault();
-            var processes = $('.process');
-            var $this = $(this);
+            let processes = $('.process');
+            let $this = $(this);
 
-            var stopping = $this.hasClass('stop');
+            let stopping = $this.hasClass('stop');
 
             processes.data('control', false).removeClass('success danger').addClass('warning');
-            $('.process-statename', processes).text(stopping ? '{{ "stopping"|trans }}' : '{{ "starting"|trans }}').removeClass('label-success label-danger').addClass('label-warning');
+            $('.process-statename', processes).text(stopping ? '{{ "stopping"|trans }}' : '{{ "starting"|trans }}').removeClass('badge-success badge-danger').addClass('badge-warning');
             $this.addClass('disabled');
 
             $.get($this.attr('href'), function (r) {
@@ -71,13 +126,13 @@
 
         // fetch update for all processes
         function updateAll() {
-            var refreshBtn = $('#refresh-all-process');
-            refreshBtn.attr('disabled', true).text(refreshBtn.data('loading-text'));
-            var url = $('.supervisor.active').data('refresh-url');
+            let refreshBtn = $('#refresh-all-process');
+            refreshBtn.attr('disabled', true).html(refreshBtn.data('loading-text'));
+            let url = $('.supervisor.active').data('refresh-url');
 
             $.get(url, function (r) {
-                for(var name in r) {
-                    var el = $('.supervisor[data-supervisor="'+r[name].supervisor+'"] .process[data-name="'+name+'"]');
+                for(let name in r) {
+                    let el = $('.supervisor[data-supervisor="'+r[name].supervisor+'"] .process[data-name="'+name+'"]');
                     if (el.length == 1) {
                         display(el, r[name]);
                     } else {
@@ -85,24 +140,30 @@
                     }
                 }
 
-                refreshBtn.attr('disabled', false).text(refreshBtn.data('text'));
+                refreshBtn.attr('disabled', false).html(refreshBtn.data('text'));
             });
         }
 
         // update one specific process
-        function update(process) {
-            $.get($('.process-info', process).attr('href'), function (r) {
+        function update(process,ajax = false) {
+            let href = $('.process-info', process).attr('href');
+            if(ajax === true)
+                href += '/1';
+            $.get(href, function (r) {
                 display(process, r);
             });
         }
 
         // update display and data
         function display(process, response) {
-            var started = response.processInfo.state == 10 || response.processInfo.state == 20;
-            $('.process-statename', process).text(response.processInfo.statename).removeClass('label-success label-danger label-warning').addClass(started ? 'label-success' : 'label-danger');
-            $('.process-control a', process).text(started ? '{{ "stop"|trans }}' : '{{ "start"|trans }}').removeClass('btn-success btn-danger disabled').addClass(started ? 'btn-danger' : 'btn-success').attr('href', response.controlLink);
-            $('.process-description', process).text(response.processInfo.description);
-            process.data('control', true).data('started', started).removeClass('success danger warning').addClass(started ? 'success' : 'danger');
+            if(response.processInfo != null)
+            {
+                let started = response.processInfo.state == 10 || response.processInfo.state == 20;
+                $('.process-statename', process).text(response.processInfo.statename).removeClass('badge-success badge-danger badge-warning').addClass(started ? 'badge-success' : 'badge-danger');
+                $('.process-control a.start-stop', process).html(started ? '<i class="fas fa-stop"></i>' : '<i class="fas fa-play"></i>').removeClass('btn-success btn-danger disabled').addClass(started ? 'btn-danger' : 'btn-success').attr('href', response.controlLink);
+                $('.process-description', process).text(response.processInfo.description);
+                process.data('control', true).data('started', started).removeClass('success danger warning').addClass(started ? 'success' : 'danger');
+            }
         }
     });
 </script>
