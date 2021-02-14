@@ -1,8 +1,7 @@
 <?php
 namespace IndyDevGuy\SupervisorBundle\Manager;
 
-use IndyDevGuy\SupervisorBundle\Library\Process;
-use IndyDevGuy\SupervisorBundle\Library\Supervisor;
+use Supervisor\Supervisor;
 
 /**
  * GroupRestrictedSupervisor.

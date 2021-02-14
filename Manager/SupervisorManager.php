@@ -1,7 +1,7 @@
 <?php
 namespace IndyDevGuy\SupervisorBundle\Manager;
 
-use IndyDevGuy\SupervisorBundle\Library\Supervisor;
+use Supervisor\Supervisor;
 
 class SupervisorManager
 {
