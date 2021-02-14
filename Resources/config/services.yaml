@@ -1,0 +1,10 @@
+services:
+  _defaults:
+    autowire: false
+    autoconfigure: false
+    public: true
+
+  supervisor.manager:
+    class: IndyDevGuy\SupervisorBundle\Manager\SupervisorManager
+    arguments:
+      - "%supervisor.servers%"

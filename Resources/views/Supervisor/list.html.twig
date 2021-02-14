@@ -1,0 +1,9 @@
+{% extends "IDGSupervisorBundle::layout.html.twig" %}
+
+{% block idg_supervisor_content %}
+    <div class="page-header">
+        <h1>Supervisor</h1>
+    </div>
+    {% include "IDGSupervisorBundle:Supervisor:list_content.html.twig" %}
+    {% include "IDGSupervisorBundle:Supervisor:list_javascript.html.twig" %}
+{% endblock idg_supervisor_content %}

@@ -1,0 +1,39 @@
+supervisor:
+  path: /
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::indexAction'}
+
+supervisor.process.startStop:
+  path: /{key}/start-stop-process/{name}/{group}/{start}/
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::startStopProcessAction' }
+
+supervisor.processes.info:
+  path: /{key}/show-processes-info/
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::showProcessInfoAllAction' }
+
+supervisor.processes.startStop:
+  path: /{key}/start-stop-all-processes/{start}/
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::startStopAllProcessesAction' }
+
+supervisor.log:
+  path: /{key}/show-log
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::showSupervisorLogAction' }
+
+supervisor.log.clear:
+  path: /{key}/clear-log
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::clearSupervisorLogAction' }
+
+supervisor.process.log:
+  path: /{key}/show-process-log/{name}/{group}/
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::showProcessLogAction' }
+
+supervisor.process.error:
+  path: /{key}/show-process-err-log/{name}/{group}/
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::showProcessLogErrAction' }
+
+supervisor.process.log.clear:
+  path: /{key}/clear-process-log/{name}/{group}/
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::clearProcessLogAction' }
+
+supervisor.process.info:
+  path: /{key}/show-process-info/{name}/{group}/
+  defaults: { _controller: 'IndyDevGuy\SupervisorBundle\Controller\SupervisorController::showProcessInfoAction' }

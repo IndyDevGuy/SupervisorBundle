@@ -1,0 +1,31 @@
+{
+  "name": "indydevguy/supervisor-bundle",
+  "type": "symfony-bundle",
+  "description": "Manage your supervisor instance in your Symfony application.",
+  "keywords": ["supervisor", "supervisord", "supervisorctl", "rpc", "api"],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Benjamin Laugueux",
+      "email": "benjamin@yzalis.com"
+    },
+    {
+      "name": "IndyDevGuy",
+      "email": "contact@indydevguy.com"
+    },
+    {
+      "name": "All contributors",
+      "homepage": "https://github.com/IndyDevGuy/supervisor-bundle/contributors"
+    }
+  ],
+  "require": {
+    "php": ">=7.4.0",
+    "indydevguy/supervisor": "dev-master",
+    "symfony/framework-bundle": "^4.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "IndyDevGuy\\SupervisorBundle\\": ""
+    }
+  }
+}
